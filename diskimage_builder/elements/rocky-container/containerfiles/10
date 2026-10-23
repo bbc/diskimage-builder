@@ -2,9 +2,19 @@ FROM docker.io/rockylinux/rockylinux:10
 
 RUN dnf install -y findutils util-linux sudo python3
 
-# RUN systemctl unmask console-getty.service dev-hugepages.mount \
-#     getty.target sys-fs-fuse-connections.mount systemd-logind.service \
-#     systemd-remount-fs.service
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
+systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+RUN /usr/bin/systemctl unmask console-getty.service dev-hugepages.mount \
+    getty.target sys-fs-fuse-connections.mount systemd-logind.service \
+    systemd-remount-fs.service
 
 # /etc/machine-id needs to be populated for /bin/kernel-install to
 # correctly copy kernels into /boot.  We will clear this out in the
