@@ -4,6 +4,12 @@ dracut:
 dracut-config-generic:
 grubby:
 kernel:
+  - arch: x86_64
+  - arch: arm64
+    when: DIB_ROCKY_KERNEL_64K=0
+kernel-64k:
+  - arch: arm64
+    when: DIB_ROCKY_KERNEL_64K=1
 initscripts:
 man-pages:
 redhat-rpm-config:
